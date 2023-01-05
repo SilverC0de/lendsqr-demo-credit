@@ -3,7 +3,7 @@ dotenv.config({path: ".env"});
 
 export const ENVIRONMENT    = process.env.ENVIRONMENT;
 export const PORT           = process.env.PORT || 2022;
-export const SECRET_KEY     = process.env.SECRET_KEY || 'secret';
+export const SECRET_KEY     = process.env.SECRET_KEY;
 export const DB             = {
     HOST: process.env.HOST,
     USER: process.env.DBUSER,

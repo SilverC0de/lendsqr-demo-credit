@@ -6,3 +6,14 @@ export interface UserInterface {
     wallet?: number;
     account_type: string;
 }
+
+export interface TransactionInterface {
+    email: string;
+    amount: number;
+    type: string;
+    status: string
+}
+
+export interface JWTInterface {
+    email?: string;
+}

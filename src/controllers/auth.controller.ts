@@ -38,7 +38,7 @@ export class AuthController {
                   email,
                   iat: Math.floor(Date.now() / 1000),
                 },
-                SECRET_KEY,
+                SECRET_KEY!,
                 {
                   algorithm: 'HS512',
                   expiresIn: '4h',
@@ -98,7 +98,7 @@ export class AuthController {
                   email,
                   iat: Math.floor(Date.now() / 1000),
                 },
-                SECRET_KEY,
+                SECRET_KEY!,
                 {
                   algorithm: 'HS512',
                   expiresIn: '4h',
