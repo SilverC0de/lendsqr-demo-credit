@@ -20,5 +20,16 @@ router.post('/register',  [
     check('account_type').notEmpty().isIn(['borrower', 'lender']).withMessage('Account type must be borrower or lender')
 ], validator, auth.registerUser);
 
+router.post('/login',  [
+  check('email').isEmail().withMessage('Enter a valid email address'),
+  check('password').isStrongPassword({
+      minLength: 6,
+      minLowercase: 0,
+      minUppercase: 0,
+      minNumbers: 0,
+      minSymbols: 0,
+    }).withMessage('Enter a valid password more than 6 characters')
+], validator, auth.login);
+
 
 export const AuthRoutes: Router = router;
