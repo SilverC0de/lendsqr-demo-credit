@@ -18,9 +18,9 @@ const knexInstance = knex.default(config);
 
 export class KnexORM {
     getUserInfo = (email : string) => {
-        return new Promise<JSON[]>((resolve, reject) => {
+        return new Promise<UserInterface>((resolve, reject) => {
             knexInstance('users').select('email', 'password', 'name', 'phone_number', 'wallet', 'account_type').where('email', email)
-            .then((data : JSON[]) => {
+            .then((data : any) => {
                 resolve(data)
             })
             .catch((e) => { 
@@ -32,8 +32,8 @@ export class KnexORM {
         })
     }
 
-    saveUserInfo = (data : any) => {
-        return new Promise<JSON[]>((resolve, reject) => {
+    saveUserInfo = (data : UserInterface) => {
+        return new Promise<UserInterface>((resolve, reject) => {
             knexInstance('users').insert(data)
             .then(() => {
                 resolve(data)

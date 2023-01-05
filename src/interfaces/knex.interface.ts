@@ -1,7 +1,8 @@
 export interface UserInterface {
     email: string;
     name: string;
+    password: string;
     phone_number: string;
-    wallet: number;
+    wallet?: number;
     account_type: string;
 }

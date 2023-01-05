@@ -21,9 +21,8 @@ export class AuthController {
             //4. Save data
 
 
-            let user_info : JSON[] = await knex.getUserInfo(email);
+            let user_info : any = await knex.getUserInfo(email);
 
-            console.log(user_info);
 
             if(user_info.length > 0){
                 //user already exist
@@ -43,18 +42,19 @@ export class AuthController {
                 {
                   algorithm: 'HS512',
                   expiresIn: '4h',
-                }
+                },
             );
 
 
-            let d = {
+            let user : UserInterface = {
                 email: email,
                 password: encrypted_password,
                 account_type: account_type,
                 name: name,
                 phone_number: phone_number
             }
-            await knex.saveUserInfo(d).then((data) => {
+
+            await knex.saveUserInfo(user).then((data) => {
                 res.status(200).json(ServerResponse.success({
                     email: email,
                     token: token
@@ -79,10 +79,9 @@ export class AuthController {
         //4. JWT token
             
         try {
-            let user_info : JSON[] = await knex.getUserInfo(email);
+            let user_info : any = await knex.getUserInfo(email);
 
-            console.log(user_info) 
-
+            
             if(user_info.length == 0) {
                 return res.status(500).json(ServerResponse.clientError({}, 'Your email does not exist on our platform'));
             }
@@ -116,6 +115,7 @@ export class AuthController {
                 account_type: user_info[0].account_type
             }, 'User signed in'));
         } catch (e) {
+            console.log(e)
             res.status(500).json(ServerResponse.serverError({}, 'Internal server error'));
         }
     }
