@@ -1,49 +1,49 @@
 export class ServerResponse {
-    static success = (data: any, message: string = '') => {
+    static success = (data: any, message: string = "") => {
         return {
-            status: 'success',
+            status: "success",
             message: message,
             data: data
         };
-    }
+    };
 
-    static validationError = (data: any, message: string = '') => {
+    static validationError = (data: any, message: string = "") => {
         return {
-            status: 'failed',
+            status: "failed",
             message: message,
             data: data
         };
-    }
+    };
 
-    static clientError = (data: any, message: string = '') => {
+    static clientError = (data: any, message: string = "") => {
         return {
-            status: 'failed',
+            status: "failed",
             message: message,
             data: data
         };
-    }
+    };
 
-    static processingError = (data: any, message: string = '') => {
+    static processingError = (data: any, message: string = "") => {
         return {
-            status: 'failed',
+            status: "failed",
             message: message,
             data: data
         };
-    }
+    };
 
-    static thirdPartyError = (data: any, message: string = '') => {
+    static thirdPartyError = (data: any, message: string = "") => {
         return {
-            status: 'failed',
+            status: "failed",
             message: message,
             data: data
         };
-    }
+    };
 
-    static serverError = (data: any, message: string = '') => {
+    static serverError = (data: any, message: string = "") => {
         return {
-            status: 'failed',
+            status: "failed",
             message: message,
             data: data
         };
-    }
+    };
 }

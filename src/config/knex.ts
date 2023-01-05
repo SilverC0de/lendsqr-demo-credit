@@ -1,9 +1,9 @@
-import { DB } from '../config/index.js';
-import knex from 'knex';
-
+import { DB } from "./";
+import knex from "knex";
+import { UserDataType } from "../types/user";
 
 const config = {
-    client: 'mysql',
+    client: "mysql",
     connection: {
         host: DB.HOST,
         user: DB.USER,
@@ -11,23 +11,22 @@ const config = {
         database: DB.DATABASE
     }
 };
-const knexInstance = knex.default(config);
-
-
+const knexInstance = knex(config);
 
 export class KnexORM {
-    saveUserInfo = (data : any) => {
-        return new Promise<KnexORM>((resolve, reject) => {
-            knexInstance('users').insert(data)
-            .then(() => {
-                resolve(data)
-            })
-            .catch((e) => { 
-                reject(e)
-            })
-            .finally(() => {
-                knexInstance.destroy();
-            });
-        })
-    }
+    saveUserInfo = (data: UserDataType) => {
+        return new Promise<UserDataType>((resolve, reject) => {
+            knexInstance("users")
+                .insert(data)
+                .then(() => {
+                    resolve(data);
+                })
+                .catch((e) => {
+                    reject(e);
+                })
+                .finally(async () => {
+                    await knexInstance.destroy();
+                });
+        });
+    };
 }
