@@ -10,7 +10,8 @@ const knex = new KnexORM();
 
 export class AuthController {
     static registerUser = async (req: Request, res: Response) => {
-        let { email, password, name, phone_number, account_type } = req.body;
+        let email = String(req.body.email).toLowerCase();
+        let {password, name, phone_number, account_type} = req.body;
 
         try {
             //Flow
@@ -21,6 +22,19 @@ export class AuthController {
 
             let encrypted_password = await bcryptjs.hash(password, 12);
 
+            let user_info : JSON[] = await knex.getUserInfo(email);
+
+            console.log(user_info);
+
+            if(user_info.length > 0){
+                //user already exist
+                return res.status(500).json(ServerResponse.clientError({}, 'Your account already exists'));
+            }
+
+
+            let encrypted_password =  await bcryptjs.hash(password, 12);
+
+
             let token = jwt.sign(
                 {
                     email,
@@ -28,8 +42,8 @@ export class AuthController {
                 },
                 SECRET_KEY,
                 {
-                    algorithm: "HS512",
-                    expiresIn: "4h"
+                  algorithm: 'HS512',
+                  expiresIn: '4h',
                 }
             );
 
@@ -62,5 +76,59 @@ export class AuthController {
         } catch (e) {
             res.status(500).json(ServerResponse.serverError({}, "Internal server error"));
         }
-    };
+    }
+
+
+    login = async (req: Request, res: Response) => {
+        let email = String(req.body.email).toLowerCase();
+        let password = req.body.password;
+
+        //Flow
+        //1. Get the email, password
+        //2. Check the password
+        //3. Get account info
+        //4. JWT token
+            
+        try {
+            let user_info : JSON[] = await knex.getUserInfo(email);
+
+            console.log(user_info) 
+
+            if(user_info.length == 0) {
+                return res.status(500).json(ServerResponse.clientError({}, 'Your email does not exist on our platform'));
+            }
+
+            const isMatch = await bcryptjs.compare(password, user_info[0].password);
+
+
+            if(!isMatch){
+                return res.status(500).json(ServerResponse.clientError({}, 'Incorrect email or password'));
+            }
+
+            let token = jwt.sign(
+                {
+                  email,
+                  iat: Math.floor(Date.now() / 1000),
+                },
+                SECRET_KEY,
+                {
+                  algorithm: 'HS512',
+                  expiresIn: '4h',
+                }
+            );
+
+
+            res.status(200).json(ServerResponse.success({
+                email: email,                
+                token: token,
+                name: user_info[0].name,
+                phone_number: user_info[0].phone_number,
+                wallet: user_info[0].wallet,
+                account_type: user_info[0].account_type
+            }, 'User signed in'));
+        } catch (e) {
+            res.status(500).json(ServerResponse.serverError({}, 'Internal server error'));
+        }
+    }
+
 }
