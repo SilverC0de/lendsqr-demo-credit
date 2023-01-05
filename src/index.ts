@@ -21,3 +21,5 @@ app.all('*', (req, res) => {
 app.listen(PORT, () => {
     console.log(`The application is listening on port ${PORT}!`);
 })
+
+export default app;

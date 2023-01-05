@@ -25,7 +25,9 @@
   },
   "homepage": "https://github.com/SilverC0de/lendsqr-demo-credit#readme",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
     "@types/express": "^4.17.15",
+    "@types/jsonwebtoken": "^9.0.0",
     "@types/node": "^18.11.18",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
