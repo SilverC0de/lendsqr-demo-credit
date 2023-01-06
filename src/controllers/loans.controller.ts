@@ -132,15 +132,15 @@ export class LoansController {
 
             if(lender_info[0].wallet < amount){
                 //lender is broke
-                return res.status(400).json(ServerResponse.clientError({}, 'Lender cannot disburse money at the moment, try later'));
+                return res.status(400).json(ServerResponse.clientError({}, 'Lender does not have up to requested amount for disbursement at the momnent'));
             }
 
            
             
-            let debitLender = await knex.debitAccount(lender, amount)
-            let creditBorrower = await knex.creditAccount(email, amount)
+            let debit_lender = await knex.debitAccount(lender, amount)
+            let credit_borrower = await knex.creditAccount(email, amount)
 
-            if(debitLender && creditBorrower){
+            if(debit_lender && credit_borrower){
                 //create loan
 
 
@@ -183,13 +183,77 @@ export class LoansController {
     loanRepayment = async (req: Request, res: Response) => {
 
         let email : string = (req as JWTInterface).email!;
-        let account_type : string = (req as JWTInterface).account_type!;
-        let {ID, amount} = req.body;
+        let {ID} = req.body;
 
         //Flow
+        //1. Make sure the loan is still IN_PROGRESS
+        //2. Calculate how much needs to be paid back
+        //3. Check borrower's amount
       
         try {
+            let single_loan : any = await knex.getSingleLoan(email, ID);
+            let user_info : any = await knex.getUserInfo(email);
 
+
+            if(single_loan == 0){
+                return res.status(400).json(ServerResponse.clientError({}, 'Invalid loan ID')); 
+            }
+
+
+            let amount : number = parseInt(single_loan[0].amount);
+            let status : string = single_loan[0].status;
+            let interest : number = single_loan[0].interest;
+            let days : number = single_loan[0].days;
+            let lender : string = single_loan[0].lender;
+            
+        
+            if(status != 'IN_PROGRESS'){
+                return res.status(400).json(ServerResponse.clientError({}, 'Loan status must be IN_PROGRESS before you can make repayments')); 
+            }
+
+
+            let repayment_amount : any = amount + ((amount * (interest / 100)) * days);
+
+
+            
+            if(user_info[0].wallet < repayment_amount){
+                //borrower is still broke
+                return res.status(400).json(ServerResponse.clientError({}, `Please credit your account with up to N${repayment_amount} to proceed`));
+            }
+
+
+
+            let debit_borrower = await knex.debitAccount(lender, repayment_amount)
+            let credit_lender = await knex.creditAccount(lender, repayment_amount)
+
+
+            if(debit_borrower && credit_lender){
+                //save transactions and update loan status
+
+
+                let transactionA : TransactionInterface = {
+                    email: lender,
+                    amount: repayment_amount,
+                    type: 'LOAN_REPAYMENT_CREDIT',
+                    status: 'successful'
+                }
+
+                let transactionB : TransactionInterface = {
+                    email: email,
+                    amount: repayment_amount,
+                    type: 'LOAN_REPAYMENT_DEBIT',
+                    status: 'successful'
+                }
+
+               
+    
+                await knex.updateLoanStatus(ID, 'COMPLETED'); 
+                await knex.saveTransaction([transactionA, transactionB]);
+   
+                res.status(200).json(ServerResponse.success(single_loan, `Loan repayment of N${repayment_amount} has been processed successfully`));
+            } else {
+                return res.status(400).json(ServerResponse.clientError({}, `Unable to complete repayment request`));
+            }
         } catch (err) {
             res.status(500).json(ServerResponse.serverError({}, 'Internal server error')); 
         }

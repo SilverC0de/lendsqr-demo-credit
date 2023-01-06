@@ -56,15 +56,14 @@ export class TransactionController {
             }
 
 
-            let debitSender = await knex.debitAccount(email, amount)
-            let creditReceiver = await knex.creditAccount(to, amount)
+            let debit_sender = await knex.debitAccount(email, amount)
+            let credit_receiver = await knex.creditAccount(to, amount)
 
 
-            if(debitSender && creditReceiver){
+            if(debit_sender && credit_receiver){
                 await knex.saveTransaction([transactionA, transactionB]).then((data) => {
                     res.status(200).json(ServerResponse.success({ from: transactionA, to : transactionB }, `N${amount} has been successfully transfered to ${recipient_info[0].name}`));
                 }).catch((e) => {
-                    console.log(e)
                     res.status(400).json(ServerResponse.clientError({}, 'Database connection error'));
                 })
             } else {

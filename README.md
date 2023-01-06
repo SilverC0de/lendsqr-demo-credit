@@ -1,5 +1,5 @@
 # Lendsqr Demo Credit
-Demo Credit is a mobile lending backend system with a wallet functionality
+Demo Credit is a mobile lending backend system with a wallet functionality, lenders will fund their account(deposit), then create loan, so when a borrower comes to request for a loan, the money will be debited from the lender's account and credited to the borrower's account.
 
 #
 ## ⚡️ Features
@@ -11,7 +11,7 @@ Demo Credit is a mobile lending backend system with a wallet functionality
 * Deposit (Account topup)
 * Creating loans (For lenders)
 * Accepting loan offers (For borrowers)
-* Loan Repayment with interest using formula `amount(percent / 100) * days)`
+* Loan Repayment with interest using formula `amount(interest_per_day / 100) * days)`
 * Unit testing
 
 

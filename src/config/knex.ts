@@ -109,6 +109,21 @@ export class KnexORM {
         })
     }
 
+    getSingleLoan = (email: string, ID : number) => {
+        return new Promise<LoanInfo>((resolve, reject) => {
+            knexInstance('loans').select('ID', 'borrower', 'lender', 'amount', 'interest', 'days', 'status', 'created_at').where('ID', ID).andWhere('borrower', email)
+            .then((data : any) => {
+                resolve(data)
+            })
+            .catch((e) => { 
+                reject(e)
+            })
+            .finally(() => {
+                //knexInstance.destroy();
+            });
+        })
+    }
+
     getAllUserLoans = (email : string, status: string) => {
         return new Promise<LoanInfo>((resolve, reject) => {
             knexInstance('loans').select('*').where('borrower', email).andWhere('status', status)
@@ -128,6 +143,21 @@ export class KnexORM {
         return new Promise<LoanInfo>((resolve, reject) => {
             knexInstance('loans').insert(data)
             .then(() => {
+                resolve(data)
+            })
+            .catch((e) => { 
+                reject(e)
+            })
+            .finally(() => {
+                //knexInstance.destroy();
+            });
+        })
+    }
+
+    updateLoanStatus = (ID : number, status: string) => {
+        return new Promise<KnexORM>((resolve, reject) => {
+            knexInstance('loans').update('status', status).where('ID', ID)
+            .then((data : any) => {
                 resolve(data)
             })
             .catch((e) => { 
