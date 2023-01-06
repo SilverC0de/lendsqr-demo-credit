@@ -7,6 +7,13 @@ export interface UserInterface {
     account_type: string;
 }
 
+export interface LoanOptionsInterface {
+    email: string;
+    min: number;
+    max: number;
+    interest_per_day: string;
+}
+
 export interface TransactionInterface {
     email: string;
     amount: number;
@@ -15,5 +22,6 @@ export interface TransactionInterface {
 }
 
 export interface JWTInterface {
-    email?: string;
+    email?: string; 
+    account_type?: string;
 }

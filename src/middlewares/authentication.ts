@@ -30,6 +30,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
         }
 
         (req as JWTInterface).email = decoded.email;
+        (req as JWTInterface).account_type = decoded.account_type;
         next();
     })
 }

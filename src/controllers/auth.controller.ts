@@ -36,6 +36,7 @@ export class AuthController {
             let token = jwt.sign(
                 {
                   email,
+                  account_type,
                   iat: Math.floor(Date.now() / 1000),
                 },
                 SECRET_KEY!,
@@ -96,6 +97,7 @@ export class AuthController {
             let token = jwt.sign(
                 {
                   email,
+                  account_type : user_info[0].account_type,
                   iat: Math.floor(Date.now() / 1000),
                 },
                 SECRET_KEY!,

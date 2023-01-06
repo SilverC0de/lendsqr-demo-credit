@@ -1,5 +1,5 @@
 import { DB } from '../config/index.js';
-import { UserInterface, TransactionInterface } from '../interfaces/knex.interface.js';
+import { UserInterface, TransactionInterface, LoanOptionsInterface } from '../interfaces/knex.interface.js';
 import knex from 'knex';
 
 
@@ -36,6 +36,21 @@ export class KnexORM {
     saveUserInfo = (data : UserInterface) => {
         return new Promise<UserInterface>((resolve, reject) => {
             knexInstance('users').insert(data)
+            .then(() => {
+                resolve(data)
+            })
+            .catch((e) => { 
+                reject(e)
+            })
+            .finally(() => {
+                knexInstance.destroy();
+            });
+        })
+    }
+
+    createLoan = (data : LoanOptionsInterface) => {
+        return new Promise<LoanOptionsInterface>((resolve, reject) => {
+            knexInstance('loan_options').insert(data)
             .then(() => {
                 resolve(data)
             })
