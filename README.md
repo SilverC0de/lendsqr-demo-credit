@@ -5,7 +5,7 @@ Demo Credit is a mobile lending backend system with a wallet functionality
 ## ⚡️ Features
 * User registration
 * User login
-* Ledger system accurate book keeping
+* Ledger for accurate book keeping
 * Internal transfer between users
 * Withdrawal
 * Deposit (Account topup)
