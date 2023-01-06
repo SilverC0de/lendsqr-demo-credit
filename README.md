@@ -16,6 +16,7 @@ Demo Credit is a mobile lending backend system with a wallet functionality
 
 #
 ## 🔥 Technologies
+* Typescript
 * Mysql
 * KnexORM
 * Jest
