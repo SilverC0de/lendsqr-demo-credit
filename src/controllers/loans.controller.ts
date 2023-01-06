@@ -63,7 +63,7 @@ export class LoansController {
     
             
             if(total_page == 0) {
-                return res.status(400).json(ServerResponse.clientError({}, `No notifications found on this page`));
+                return res.status(400).json(ServerResponse.clientError({}, `No loan options found on this page`));
             }
 
             if(current_page > total_page){
@@ -126,8 +126,8 @@ export class LoansController {
                 return res.status(400).json(ServerResponse.clientError({}, `Please enter an amount within the specified loan amount of N${min} and N${max}`));
             }
 
-            if(user_pending_loans.length > 0) {
-                return res.status(400).json(ServerResponse.clientError({}, 'We cannot proceed with your request because you have an active loan'));
+            if(user_pending_loans.length > 4) {
+                return res.status(400).json(ServerResponse.clientError({}, 'We cannot proceed with your request because you have over 4 active loan'));
             }
 
             if(lender_info[0].wallet < amount){
@@ -179,4 +179,49 @@ export class LoansController {
             res.status(500).json(ServerResponse.serverError({}, 'Internal server error')); 
         }
     }
+
+    listLoans = async (req: Request, res: Response) => {
+        let email : string = (req as JWTInterface).email!;
+        let account_type : string = (req as JWTInterface).account_type!;
+
+
+        //Flow
+        //Just get the options
+
+        try {
+
+            let current_page = parseInt(req.params.page)
+            let skip = (current_page - 1) * 10
+            let take = 10
+    
+
+
+
+           
+            let total_loans : any = await knex.getLoanCount(account_type, email)
+            let total_page : number = Math.ceil(total_loans[0]['count(*)'] / take);
+    
+            
+            if(total_page == 0) {
+                return res.status(400).json(ServerResponse.clientError({}, `No loans found on this page`));
+            }
+
+            if(current_page > total_page){
+                return res.status(400).json(ServerResponse.clientError({}, `Current page cannot be greater than ${total_page}`));
+            }
+
+            let loans = await knex.getLoans(take, skip, account_type, email);
+
+            
+            res.status(200).json(ServerResponse.success({
+                current_page: current_page,
+                total_page: total_page,
+                loans: loans
+            }, 'User loans fetched'));   
+        } catch (err) {
+            res.status(500).json(ServerResponse.serverError({}, 'Internal server error'));
+        }
+    }
+
+
 }

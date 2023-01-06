@@ -139,6 +139,38 @@ export class KnexORM {
         })
     }
 
+
+    getLoanCount = (account_type: string, email: string) => {
+        return new Promise<KnexORM>((resolve, reject) => {
+            knexInstance('loans').count().where(account_type, email)
+            .then((data : any) => {
+                resolve(data)
+            })
+            .catch((e) => { 
+                reject(e)
+            })
+            .finally(() => {
+                //knexInstance.destroy();
+            });
+        })
+    }
+
+
+    getLoans = (take : number, skip : number, account_type: string, email: string) => {
+        return new Promise<KnexORM>((resolve, reject) => {
+            knexInstance('loans').select('ID', 'borrower', 'lender', 'amount', 'interest', 'days', 'status', 'created_at').where(account_type, email).limit(take).offset(skip)
+            .then((data : any) => {
+                resolve(data)
+            })
+            .catch((e) => { 
+                reject(e)
+            })
+            .finally(() => {
+                //knexInstance.destroy();
+            });
+        })
+    }
+
     debitAccount = (email: string, amount : number) => {
         return new Promise<TransactionInterface>((resolve, reject) => {
             //raw query for ledger transactions

@@ -23,5 +23,9 @@ router.post('/accept',  [
     check('amount').isInt({ min: 1000, max: 200000 }).withMessage('Enter your preferred amount between N1000 and N200k'),
 ], validator, authentication, loans.acceptOption);
 
+router.get('/:page', [
+    check('page').isInt({ min: 1 }).withMessage('Enter a valid page number')
+], validator, authentication, loans.listLoans)
+
 
 export const LoansRoutes: Router = router;
