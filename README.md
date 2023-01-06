@@ -11,6 +11,7 @@ Demo Credit is a mobile lending backend system with a wallet functionality
 * Deposit (Account topup)
 * Creating loans (For lenders)
 * Accepting loan offers (For borrowers)
+* Loan Repayment with interest with formula *amount(percent / 100) x days)*
 * Unit testing
 
 

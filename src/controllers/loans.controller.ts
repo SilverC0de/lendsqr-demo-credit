@@ -180,6 +180,22 @@ export class LoansController {
         }
     }
 
+    loanRepayment = async (req: Request, res: Response) => {
+
+        let email : string = (req as JWTInterface).email!;
+        let account_type : string = (req as JWTInterface).account_type!;
+        let {ID, amount} = req.body;
+
+        //Flow
+      
+        try {
+
+        } catch (err) {
+            res.status(500).json(ServerResponse.serverError({}, 'Internal server error')); 
+        }
+    }
+
+
     listLoans = async (req: Request, res: Response) => {
         let email : string = (req as JWTInterface).email!;
         let account_type : string = (req as JWTInterface).account_type!;

@@ -23,6 +23,11 @@ router.post('/accept',  [
     check('amount').isInt({ min: 1000, max: 200000 }).withMessage('Enter your preferred amount between N1000 and N200k'),
 ], validator, authentication, loans.acceptOption);
 
+router.post('/repayment',  [
+    check('ID').isInt({ min: 1 }).withMessage('Enter a valid loan ID'),
+    check('amount').isInt({ min: 1000, max: 200000 }).withMessage('Enter your preferred amount between N1000 and N200k'),
+], validator, authentication, loans.loanRepayment);
+
 router.get('/:page', [
     check('page').isInt({ min: 1 }).withMessage('Enter a valid page number')
 ], validator, authentication, loans.listLoans)
