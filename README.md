@@ -45,7 +45,7 @@ This repository was written in typescript and runs on Nodejs
 4. Navigate the collection and test the endpoints
 
 #
-## Database Schema
+## 📚 Database Schema
 MySQL Database with InnoDB storage engine. It has foreign keys linking the users and other tables.
 
 *users* -- The `users` table keeps the data of all users (borrowers and lenders)\
