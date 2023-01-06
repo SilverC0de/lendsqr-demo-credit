@@ -123,4 +123,37 @@ export class TransactionController {
             res.status(500).json(ServerResponse.serverError({}, 'Internal server error'));   
         }
     }
+
+
+    deposit = async (req: Request, res: Response) => {
+        let email : string = (req as JWTInterface).email!;
+        let { amount } = req.body;
+
+
+        try {
+            let creditUser = await knex.creditAccount(email, amount)
+
+
+            if(creditUser){
+                //log the transaction details
+
+                let transaction_data : TransactionInterface = {
+                    email: email,
+                    amount: amount,
+                    type: 'DEPOSIT',
+                    status: 'successful'
+                }
+    
+
+                await knex.saveTransaction(transaction_data)
+
+                res.status(200).json(ServerResponse.success(transaction_data, `N${amount} deposit has been made to your account`));
+            } else {
+                res.status(400).json(ServerResponse.clientError({}, 'Unable to process deposit'));
+            }
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(ServerResponse.serverError({}, 'Internal server error'));   
+        }
+    }
 }

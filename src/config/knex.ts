@@ -43,7 +43,7 @@ export class KnexORM {
                 reject(e)
             })
             .finally(() => {
-                knexInstance.destroy();
+                //knexInstance.destroy();
             });
         })
     }
@@ -58,7 +58,7 @@ export class KnexORM {
                 reject(e)
             })
             .finally(() => {
-                knexInstance.destroy();
+                //knexInstance.destroy();
             });
         })
     }
@@ -134,7 +134,7 @@ export class KnexORM {
                 reject(e)
             })
             .finally(() => {
-                knexInstance.destroy();
+                //knexInstance.destroy();
             });
         })
     }
@@ -218,7 +218,7 @@ export class KnexORM {
                 reject(e)
             })
             .finally(() => {
-                knexInstance.destroy();
+                //knexInstance.destroy();
             });
         })
     }

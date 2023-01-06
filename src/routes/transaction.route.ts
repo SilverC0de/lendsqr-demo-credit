@@ -21,5 +21,10 @@ router.post('/withdraw',  [
 ], validator, authentication, transaction.externalTransfer);
 
 
+router.post('/deposit',  [
+    check('amount').isInt({ min: 100, max: 50000 }).withMessage('Please enter a valid amount between N100 and 50k')
+], validator, authentication, transaction.deposit);
+
+
 
 export const TransactionRoutes: Router = router;
