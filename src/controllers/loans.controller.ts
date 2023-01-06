@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ServerResponse } from "../config/response.js";
 import { KnexORM } from "../config/knex.js";
-import { JWTInterface, LoanOptionsInterface } from "../interfaces/knex.interface.js";
+import { JWTInterface, TransactionInterface, LoanOptionsInterface, LoanInfo } from "../interfaces/knex.interface.js";
 
 const knex = new KnexORM();
 
@@ -80,6 +80,103 @@ export class LoansController {
             }, 'Loan option fetched'));   
         } catch (err) {
             res.status(500).json(ServerResponse.serverError({}, 'Internal server error'));
+        }
+    }
+
+
+    acceptOption = async (req: Request, res: Response) => {
+        let email : string = (req as JWTInterface).email!;
+        let account_type : string = (req as JWTInterface).account_type!;
+        let {ID, amount} = req.body;
+
+        //Flow
+        //1. Get the loan option to see if its valid
+        //2. Save the loan option
+        //3. Debit the lender
+        //4. Credit the borrower
+        //5. Check if user does not have a pending loan tho
+        //6 Also check if the amouont is within what the lender specifies
+        //7 Also check if the lender has money lol
+
+        try {
+
+            if(account_type != 'borrower'){
+                return res.status(400).json(ServerResponse.clientError({}, 'You need to be a borrower to accept any loan'));
+            }
+
+
+            let loan_info : any = await knex.getLoanOptionInfo(ID);
+
+            if(loan_info.length == 0){
+                //loan info doesn't exist
+                return res.status(400).json(ServerResponse.clientError({}, 'Loan doesn\'t exist'));
+            }
+
+
+            let min : number = loan_info[0].min;
+            let max : number = loan_info[0].max;
+            let lender = loan_info[0].email
+
+            let user_pending_loans : any= await knex.getAllUserLoans(email, 'IN_PROGRESS')
+            let lender_info : any = await knex.getUserInfo(lender);
+
+
+
+            if(amount < min || amount > max) {
+                return res.status(400).json(ServerResponse.clientError({}, `Please enter an amount within the specified loan amount of N${min} and N${max}`));
+            }
+
+            if(user_pending_loans.length > 0) {
+                return res.status(400).json(ServerResponse.clientError({}, 'We cannot proceed with your request because you have an active loan'));
+            }
+
+            if(lender_info[0].wallet < amount){
+                //lender is broke
+                return res.status(400).json(ServerResponse.clientError({}, 'Lender cannot disburse money at the moment, try later'));
+            }
+
+           
+            
+            let debitLender = await knex.debitAccount(lender, amount)
+            let creditBorrower = await knex.creditAccount(email, amount)
+
+            if(debitLender && creditBorrower){
+                //create loan
+
+
+                let transactionA : TransactionInterface = {
+                    email: lender,
+                    amount: amount,
+                    type: 'LOAN_DISBURSEMENT',
+                    status: 'successful'
+                }
+
+                let transactionB : TransactionInterface = {
+                    email: email,
+                    amount: amount,
+                    type: 'LOAN_APPROVAL',
+                    status: 'successful'
+                }
+
+                let new_loan_data : LoanInfo = {
+                    borrower: email,
+                    amount: amount,
+                    lender: lender,
+                    interest: loan_info[0].interest_per_day,
+                    days: loan_info[0].days,
+                }
+    
+                await knex.saveLoanInfo(new_loan_data); 
+                await knex.saveTransaction([transactionA, transactionB]);
+   
+
+                res.status(200).json(ServerResponse.success(new_loan_data, `Loan offer accepted successfully and you have also been credited N${amount}`));
+            } else {
+                //unable to proceed with debits and credits
+                res.status(540).json(ServerResponse.serverError({}, 'Unable to proceed with loan request, contact the adminstrator'));
+            }        
+        } catch (err) {
+            res.status(500).json(ServerResponse.serverError({}, 'Internal server error')); 
         }
     }
 }

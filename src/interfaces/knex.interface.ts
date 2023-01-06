@@ -27,3 +27,14 @@ export interface JWTInterface {
     email?: string; 
     account_type?: string;
 }
+
+export interface LoanInfo {
+    borrower: string;
+    lender: string;
+    amount: number;
+    interest: number;
+    days: number;
+    status?: string;
+    created_at?: string;
+    updated_at?: string;
+}

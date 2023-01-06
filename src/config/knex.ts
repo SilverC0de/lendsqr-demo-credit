@@ -1,5 +1,5 @@
 import { DB } from '../config/index.js';
-import { UserInterface, TransactionInterface, LoanOptionsInterface } from '../interfaces/knex.interface.js';
+import { UserInterface, TransactionInterface, LoanOptionsInterface, LoanInfo } from '../interfaces/knex.interface.js';
 import knex from 'knex';
 
 
@@ -81,7 +81,7 @@ export class KnexORM {
 
     getLoanOptions = (take : number, skip : number) => {
         return new Promise<KnexORM>((resolve, reject) => {
-            knexInstance('loan_options').select('ID', 'email', 'min', 'max', 'interest_per_day').limit(take).offset(skip)
+            knexInstance('loan_options').select('ID', 'email', 'min', 'max', 'days', 'interest_per_day').limit(take).offset(skip)
             .then((data : any) => {
                 resolve(data)
             })
@@ -90,6 +90,51 @@ export class KnexORM {
             })
             .finally(() => {
                 //knexInstance.destroy();
+            });
+        })
+    }
+
+    getLoanOptionInfo = (ID : string) => {
+        return new Promise<LoanOptionsInterface>((resolve, reject) => {
+            knexInstance('loan_options').select('*').where('ID', ID)
+            .then((data : any) => {
+                resolve(data)
+            })
+            .catch((e) => { 
+                reject(e)
+            })
+            .finally(() => {
+                //knexInstance.destroy();
+            });
+        })
+    }
+
+    getAllUserLoans = (email : string, status: string) => {
+        return new Promise<LoanInfo>((resolve, reject) => {
+            knexInstance('loans').select('*').where('borrower', email).andWhere('status', status)
+            .then((data : any) => {
+                resolve(data)
+            })
+            .catch((e) => { 
+                reject(e)
+            })
+            .finally(() => {
+                //knexInstance.destroy();
+            });
+        })
+    }
+
+    saveLoanInfo = (data : LoanInfo) => {
+        return new Promise<LoanInfo>((resolve, reject) => {
+            knexInstance('loans').insert(data)
+            .then(() => {
+                resolve(data)
+            })
+            .catch((e) => { 
+                reject(e)
+            })
+            .finally(() => {
+                knexInstance.destroy();
             });
         })
     }
