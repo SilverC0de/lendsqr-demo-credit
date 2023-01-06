@@ -26,5 +26,10 @@ router.post('/deposit',  [
 ], validator, authentication, transaction.deposit);
 
 
+router.get('/:page', [
+    check('page').isInt({ min: 1 }).withMessage('Enter a valid page number')
+], validator, authentication, transaction.listTransactions)
+
+
 
 export const TransactionRoutes: Router = router;

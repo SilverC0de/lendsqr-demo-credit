@@ -156,4 +156,46 @@ export class TransactionController {
             res.status(500).json(ServerResponse.serverError({}, 'Internal server error'));   
         }
     }
+
+
+    listTransactions = async (req: Request, res: Response) => {
+        let email : string = (req as JWTInterface).email!;
+
+        //Flow
+        //Just get the transactions
+
+        try {
+
+            let current_page = parseInt(req.params.page)
+            let skip = (current_page - 1) * 10
+            let take = 10
+    
+
+
+
+            let total_transactions : any = await knex.getUserTransactionsCount(email)
+            let total_page : number = Math.ceil(total_transactions[0]['count(*)'] / take);
+    
+            
+            if(total_page == 0) {
+                return res.status(400).json(ServerResponse.clientError({}, `No transactions found on this page`));
+            }
+
+            if(current_page > total_page){
+                return res.status(400).json(ServerResponse.clientError({}, `Current page cannot be greater than ${total_page}`));
+            }
+
+            let transactions = await knex.getUserTransactions(take, skip, email);
+
+            
+            res.status(200).json(ServerResponse.success({
+                current_page: current_page,
+                total_page: total_page,
+                transactions: transactions
+            }, 'User transactions fetched'));   
+        } catch (err) {
+            res.status(500).json(ServerResponse.serverError({}, 'Internal server error'));
+        }
+    }
+
 }

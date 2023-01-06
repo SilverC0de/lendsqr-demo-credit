@@ -81,7 +81,7 @@ export class KnexORM {
 
     getLoanOptions = (take : number, skip : number) => {
         return new Promise<KnexORM>((resolve, reject) => {
-            knexInstance('loan_options').select('ID', 'email', 'min', 'max', 'days', 'interest_per_day').limit(take).offset(skip)
+            knexInstance('loan_options').select('ID', 'email', 'min', 'max', 'days', 'interest_per_day').limit(take).offset(skip).orderBy('ID', 'desc')
             .then((data : any) => {
                 resolve(data)
             })
@@ -158,7 +158,7 @@ export class KnexORM {
 
     getLoans = (take : number, skip : number, account_type: string, email: string) => {
         return new Promise<KnexORM>((resolve, reject) => {
-            knexInstance('loans').select('ID', 'borrower', 'lender', 'amount', 'interest', 'days', 'status', 'created_at').where(account_type, email).limit(take).offset(skip)
+            knexInstance('loans').select('ID', 'borrower', 'lender', 'amount', 'interest', 'days', 'status', 'created_at').where(account_type, email).limit(take).offset(skip).orderBy('ID', 'desc')
             .then((data : any) => {
                 resolve(data)
             })
@@ -170,6 +170,38 @@ export class KnexORM {
             });
         })
     }
+
+    getUserTransactionsCount = (email: string) => {
+        return new Promise<KnexORM>((resolve, reject) => {
+            knexInstance('transactions').count().where('email', email)
+            .then((data : any) => {
+                resolve(data)
+            })
+            .catch((e) => { 
+                reject(e)
+            })
+            .finally(() => {
+                //knexInstance.destroy();
+            });
+        })
+    }
+
+
+    getUserTransactions = (take : number, skip : number, email: string) => {
+        return new Promise<KnexORM>((resolve, reject) => {
+            knexInstance('transactions').select('ID', 'email', 'amount', 'recipient', 'bank_code', 'bank_name', 'bank_nuban', 'type', 'status').where('email', email).limit(take).offset(skip).orderBy('ID', 'desc')
+            .then((data : any) => {
+                resolve(data)
+            })
+            .catch((e) => { 
+                reject(e)
+            })
+            .finally(() => {
+                //knexInstance.destroy();
+            });
+        })
+    }
+
 
     debitAccount = (email: string, amount : number) => {
         return new Promise<TransactionInterface>((resolve, reject) => {
