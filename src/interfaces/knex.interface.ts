@@ -21,6 +21,10 @@ export interface TransactionInterface {
     amount: number;
     type: string;
     status: string
+    recipient?: string;
+    bank_holder?: string;
+    bank_nuban?: string;
+    bank_name?: string;
 }
 
 export interface JWTInterface {

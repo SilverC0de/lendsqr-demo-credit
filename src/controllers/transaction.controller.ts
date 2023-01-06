@@ -62,13 +62,62 @@ export class TransactionController {
 
             if(debitSender && creditReceiver){
                 await knex.saveTransaction([transactionA, transactionB]).then((data) => {
-                    res.status(200).json(ServerResponse.success({}, `N${amount} has been successfully transfered to ${recipient_info[0].name}`));
+                    res.status(200).json(ServerResponse.success({ from: transactionA, to : transactionB }, `N${amount} has been successfully transfered to ${recipient_info[0].name}`));
                 }).catch((e) => {
                     console.log(e)
                     res.status(400).json(ServerResponse.clientError({}, 'Database connection error'));
                 })
             } else {
                 res.status(400).json(ServerResponse.clientError({}, 'Internal error, contact the administrator'));
+            }
+        } catch (error) {
+            res.status(500).json(ServerResponse.serverError({}, 'Internal server error'));   
+        }
+    }
+
+    externalTransfer = async (req: Request, res: Response) => {
+        let email : string = (req as JWTInterface).email!;
+        let { amount, bank_name, bank_holder, bank_nuban} = req.body;
+
+
+        //Flow
+        //1. Check the balance
+        //2. Debit the account
+        //3. Log it
+
+        try {
+
+            let user_info : any = await knex.getUserInfo(email);
+
+
+            if(user_info[0].wallet < amount){
+                return res.status(400).json(ServerResponse.clientError({}, 'Insufficient funds'));
+            }
+
+
+
+            let debitUser = await knex.debitAccount(email, amount)
+
+
+            if(debitUser){
+                //log the transaction details
+
+                let transaction_data : TransactionInterface = {
+                    email: email,
+                    amount: amount,
+                    recipient: bank_holder,
+                    bank_name: bank_name,
+                    bank_nuban: bank_nuban,
+                    type: 'WITHDRAWAL',
+                    status: 'pending'
+                }
+    
+
+                await knex.saveTransaction(transaction_data)
+
+                res.status(200).json(ServerResponse.success(transaction_data, `N${amount} withdrawal be processed by our agent shortly`));
+            } else {
+                res.status(400).json(ServerResponse.clientError({}, 'Unable to process withdrawal'));
             }
         } catch (error) {
             res.status(500).json(ServerResponse.serverError({}, 'Internal server error'));   

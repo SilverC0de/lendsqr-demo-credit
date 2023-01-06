@@ -12,8 +12,8 @@ export interface JWTVerifyOptions {
 
 export default (req: Request, res: Response, next: NextFunction) => {
     let auth = req.headers.authorization;
-    if (!auth) {
-        res.status(401).json(ServerResponse.validationError({}, 'Authorization is required'));
+    if (!auth || auth == null || auth == undefined) {
+        return res.status(401).json(ServerResponse.validationError({}, 'Authorization is required'));
     }
 
     let token : string = auth!.split(' ')[1];

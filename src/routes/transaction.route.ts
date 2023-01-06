@@ -13,5 +13,13 @@ router.post('/internal',  [
 ], validator, authentication, transaction.internalTransfer);
 
 
+router.post('/withdraw',  [
+    check('bank_holder').not().isEmpty().trim().withMessage('Enter a valid recipient name'),
+    check('bank_name').not().isEmpty().trim().withMessage('Enter a valid bank'),
+    check('bank_nuban').isNumeric().isLength({min : 10, max : 10}).withMessage('Invalid account number'),
+    check('amount').isInt({ min: 100, max: 200000 }).withMessage('Please enter a valid amount between N100 and 200k')
+], validator, authentication, transaction.externalTransfer);
+
+
 
 export const TransactionRoutes: Router = router;
