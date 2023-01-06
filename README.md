@@ -36,6 +36,17 @@ This repository was written in typescript and runs on Nodejs
 6. ``npm run it``
 
 
+#
+## ✔️ System guides
+* Only lenders are allowed to create loan options with details like *tenure, interest, min and max amount.*
+* Lenders need to fund their wallet before borrowers can get loans
+* Borrowers will see the loan options before they can choose their preferred loan
+* Accepting a loan option is for borrowers, the requested ID is gotten from the list of loan options. The lender's wallet will then be debited and the borrower's wallet will be credited
+* Deposits and withdrawals does not require debit cards or bank accounts as this is a demo project
+* Loan repayments for borrowers is paid once and the borrower needs to have the repayment amount in their wallet, the ID can be gotten from the list of loans
+* Internal transfer is a P2P feature that allows users send money between themselves
+
+
 
 #
 ## 🚀 Testing
