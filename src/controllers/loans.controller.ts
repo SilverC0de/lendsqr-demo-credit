@@ -9,7 +9,7 @@ export class LoansController {
     createLoan = async (req: Request, res: Response) => {
         let email : string = (req as JWTInterface).email!;
         let account_type : string = (req as JWTInterface).account_type!;
-        let { min, max, interest_per_day} = req.body;
+        let { min, max, days, interest_per_day} = req.body;
        
     
         //Flow
@@ -26,6 +26,7 @@ export class LoansController {
                 email: email,
                 min: min,
                 max: max,
+                days: days,
                 interest_per_day: interest_per_day,
             }
 

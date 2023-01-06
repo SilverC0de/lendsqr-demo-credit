@@ -12,6 +12,7 @@ export interface LoanOptionsInterface {
     email: string;
     min: number;
     max: number;
+    days: number;
     interest_per_day: string;
 }
 
