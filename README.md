@@ -26,7 +26,7 @@ Demo Credit is a mobile lending backend system with a wallet functionality, lend
 #
 ## 🥷 Installation
 
-This repository was written in typescript and runs on Nodejs
+This repository was written in typescript and runs on Nodejs, installation is optional
 
 1. Make sure you're running Node.js on your system
 2. ``git clone https://github.com/SilverC0de/lendsqr-demo-credit.git``
