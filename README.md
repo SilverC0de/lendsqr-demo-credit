@@ -51,7 +51,7 @@ This repository was written in typescript and runs on Nodejs
 #
 ## 🚀 Testing
 
-1. Download the <a id="raw-url" href="https://raw.githubusercontent.com/SilverC0de/lendsqr-demo-credit/main/postman_collection.json">Postman Collection</a>
+1. Download the <a id="raw-url" href="https://raw.githubusercontent.com/SilverC0de/lendsqr-demo-credit/main/postman_collection.json">Postman Collection</a> or copy the link `https://raw.githubusercontent.com/SilverC0de/lendsqr-demo-credit/main/postman_collection.json`
 2. Open Postman and import the collection
 3. Add the variable `baseUrl` with value `https://dshj` to the collection and save
 4. Navigate the collection and test the endpoints
