@@ -46,7 +46,7 @@ This repository was written in typescript and runs on Nodejs
 
 #
 ## 📚 Database Schema
-MySQL Database with InnoDB storage engine. It has foreign keys linking the users and other tables.
+MySQL Database Schema design using InnoDB storage engine. It has foreign keys linking the users and other tables.
 
 * **users**: The `users` table keeps the data of all users (borrowers and lenders)
 * **ledger**: The `ledger` is the book keeping system that keeps track of all the debits and credits of each user so it has to be linked to the `users table`
