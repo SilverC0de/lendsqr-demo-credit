@@ -30,7 +30,7 @@ export class LoansController {
             }
 
 
-            await knex.createLoan(loan).then(() => {
+            await knex.createLoanOption(loan).then(() => {
                 res.status(200).json(ServerResponse.success(req.body, 'Loan option created successfully'));   
             }).catch(err => {
                 res.status(400).json(ServerResponse.clientError({}, 'Unable to create loan option'));   
@@ -39,6 +39,46 @@ export class LoansController {
 
         } catch (error) {
             res.status(500).json(ServerResponse.serverError({}, 'Internal server error'));   
+        }
+    }
+
+    listOptions = async (req: Request, res: Response) => {
+
+
+        //Flow
+        //Just get the options
+
+        try {
+
+            let current_page = parseInt(req.params.page)
+            let skip = (current_page - 1) * 10
+            let take = 10
+    
+
+
+
+            let total_options : any = await knex.getLoanOptinsCount()
+            let total_page : number = Math.ceil(total_options[0]['count(*)'] / take);
+    
+            
+            if(total_page == 0) {
+                return res.status(400).json(ServerResponse.clientError({}, `No notifications found on this page`));
+            }
+
+            if(current_page > total_page){
+                return res.status(400).json(ServerResponse.clientError({}, `Current page cannot be greater than ${total_page}`));
+            }
+
+            let loan_options = await knex.getLoanOptions(take, skip);
+
+            
+            res.status(200).json(ServerResponse.success({
+                current_page: current_page,
+                total_page: total_page,
+                loans: loan_options
+            }, 'Loan option fetched'));   
+        } catch (err) {
+            res.status(500).json(ServerResponse.serverError({}, 'Internal server error'));
         }
     }
 }

@@ -13,6 +13,9 @@ router.post('/create',  [
     check('interest_per_day').isInt({ min: 1, max: 20 }).withMessage('Interest per day should be between 1% and 20%')
 ], validator, authentication, loans.createLoan);
 
+router.get('/options/:page', [
+    check('page').isInt({ min: 1 }).withMessage('Enter a valid page number')
+], validator, authentication, loans.listOptions)
 
 
 export const LoansRoutes: Router = router;

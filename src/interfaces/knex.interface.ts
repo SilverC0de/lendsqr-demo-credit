@@ -8,6 +8,7 @@ export interface UserInterface {
 }
 
 export interface LoanOptionsInterface {
+    ID?: number;
     email: string;
     min: number;
     max: number;

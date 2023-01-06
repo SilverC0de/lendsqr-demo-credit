@@ -48,7 +48,7 @@ export class KnexORM {
         })
     }
 
-    createLoan = (data : LoanOptionsInterface) => {
+    createLoanOption = (data : LoanOptionsInterface) => {
         return new Promise<LoanOptionsInterface>((resolve, reject) => {
             knexInstance('loan_options').insert(data)
             .then(() => {
@@ -59,6 +59,37 @@ export class KnexORM {
             })
             .finally(() => {
                 knexInstance.destroy();
+            });
+        })
+    }
+
+    getLoanOptinsCount = () => {
+        return new Promise<KnexORM>((resolve, reject) => {
+            knexInstance('loan_options').count()
+            .then((data : any) => {
+                resolve(data)
+            })
+            .catch((e) => { 
+                reject(e)
+            })
+            .finally(() => {
+                //knexInstance.destroy();
+            });
+        })
+    }
+
+
+    getLoanOptions = (take : number, skip : number) => {
+        return new Promise<KnexORM>((resolve, reject) => {
+            knexInstance('loan_options').select('ID', 'email', 'min', 'max', 'interest_per_day').limit(take).offset(skip)
+            .then((data : any) => {
+                resolve(data)
+            })
+            .catch((e) => { 
+                reject(e)
+            })
+            .finally(() => {
+                //knexInstance.destroy();
             });
         })
     }
