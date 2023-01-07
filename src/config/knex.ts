@@ -1,5 +1,4 @@
 import { DB } from '../config/index.js';
-import { UserInterface, TransactionInterface, LoanOptionsInterface, LoanInfo } from '../interfaces/knex.interface.js';
 import knex from 'knex';
 
 

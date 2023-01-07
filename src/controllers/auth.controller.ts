@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { SECRET_KEY } from "../config/index.js";
 import { ServerResponse } from "../config/response.js";
-import { KnexORM } from "../config/knex.js";
+import { UsersHelper } from "../helpers/users.js";
 import { UserInterface } from "../interfaces/knex.interface.js";
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const knex = new KnexORM();
+const usersHelper = new UsersHelper();
 
 export class AuthController {
     registerUser = async (req: Request, res: Response) => {
@@ -21,7 +21,7 @@ export class AuthController {
             //4. Save data
 
 
-            let user_info : any = await knex.getUserInfo(email);
+            let user_info : any = await usersHelper.getUserInfo(email);
 
 
             if(user_info.length > 0){
@@ -55,7 +55,7 @@ export class AuthController {
                 phone_number: phone_number
             }
 
-            await knex.saveUserInfo(user).then((data) => {
+            await usersHelper.saveUserInfo(user).then((data) => {
                 res.status(200).json(ServerResponse.success({
                     email: email,
                     token: token
@@ -80,7 +80,7 @@ export class AuthController {
         //4. JWT token
             
         try {
-            let user_info : any = await knex.getUserInfo(email);
+            let user_info : any = await usersHelper.getUserInfo(email);
 
             
             if(user_info.length == 0) {
