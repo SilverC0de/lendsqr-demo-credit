@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { SECRET_KEY } from "../config/index.js";
 import { ServerResponse } from "../config/response.js";
 import { UsersHelper } from "../helpers/users.js";
 import { TransactionsHelper } from "../helpers/transactions.js";
