@@ -1,9 +1,16 @@
 import { Request, Response } from "express";
 import { ServerResponse } from "../config/response.js";
-import { KnexORM } from "../config/knex.js";
-import { JWTInterface, TransactionInterface, LoanOptionsInterface, LoanInfo } from "../interfaces/knex.interface.js";
+import { LoansHelper } from "../helpers/loans.js";
+import { LoanOptionsHelper } from "../helpers/loan_options.js";
+import { UsersHelper } from "../helpers/users.js";
+import { TransactionsHelper } from "../helpers/transactions.js";
+import { JWTInterface } from "../interfaces/jwt.interface.js";
+import { TransactionInterface, LoanOptionsInterface, LoanInfo } from "../interfaces/knex.interface.js";
 
-const knex = new KnexORM();
+const loansHelper = new LoansHelper();
+const loanOptionsHelper = new LoanOptionsHelper();
+const usersHelper = new UsersHelper();
+const transactionsHelper = new TransactionsHelper();
 
 export class LoansController {
     createLoan = async (req: Request, res: Response) => {
@@ -31,7 +38,7 @@ export class LoansController {
             }
 
 
-            await knex.createLoanOption(loan).then(() => {
+            await loanOptionsHelper.createLoanOption(loan).then(() => {
                 res.status(200).json(ServerResponse.success(req.body, 'Loan option created successfully'));   
             }).catch(err => {
                 res.status(400).json(ServerResponse.clientError({}, 'Unable to create loan option'));   
@@ -58,7 +65,7 @@ export class LoansController {
 
 
 
-            let total_options : any = await knex.getLoanOptinsCount()
+            let total_options : any = await loanOptionsHelper.getLoanOptinsCount()
             let total_page : number = Math.ceil(total_options[0]['count(*)'] / take);
     
             
@@ -70,7 +77,7 @@ export class LoansController {
                 return res.status(400).json(ServerResponse.clientError({}, `Current page cannot be greater than ${total_page}`));
             }
 
-            let loan_options = await knex.getLoanOptions(take, skip);
+            let loan_options = await loanOptionsHelper.getLoanOptions(take, skip);
 
             
             res.status(200).json(ServerResponse.success({
@@ -105,7 +112,7 @@ export class LoansController {
             }
 
 
-            let loan_info : any = await knex.getLoanOptionInfo(ID);
+            let loan_info : any = await loanOptionsHelper.getLoanOptionInfo(ID);
 
             if(loan_info.length == 0){
                 //loan info doesn't exist
@@ -117,8 +124,8 @@ export class LoansController {
             let max : number = loan_info[0].max;
             let lender = loan_info[0].email
 
-            let user_pending_loans : any= await knex.getAllUserLoans(email, 'IN_PROGRESS')
-            let lender_info : any = await knex.getUserInfo(lender);
+            let user_pending_loans : any= await loansHelper.getAllUserLoans(email, 'IN_PROGRESS')
+            let lender_info : any = await usersHelper.getUserInfo(lender);
 
 
 
@@ -137,8 +144,8 @@ export class LoansController {
 
            
             
-            let debit_lender = await knex.debitAccount(lender, amount)
-            let credit_borrower = await knex.creditAccount(email, amount)
+            let debit_lender = await usersHelper.debitAccount(lender, amount)
+            let credit_borrower = await usersHelper.creditAccount(email, amount)
 
             if(debit_lender && credit_borrower){
                 //create loan
@@ -166,8 +173,8 @@ export class LoansController {
                     days: loan_info[0].days,
                 }
     
-                await knex.saveLoanInfo(new_loan_data); 
-                await knex.saveTransaction([transactionA, transactionB]);
+                await loansHelper.saveLoanInfo(new_loan_data); 
+                await transactionsHelper.saveTransaction([transactionA, transactionB]);
    
 
                 res.status(200).json(ServerResponse.success(new_loan_data, `Loan offer accepted successfully and you have also been credited N${amount}`));
@@ -191,8 +198,8 @@ export class LoansController {
         //3. Check borrower's amount
       
         try {
-            let single_loan : any = await knex.getSingleLoan(email, ID);
-            let user_info : any = await knex.getUserInfo(email);
+            let single_loan : any = await loansHelper.getSingleLoan(email, ID);
+            let user_info : any = await usersHelper.getUserInfo(email);
 
 
             if(single_loan == 0){
@@ -223,8 +230,8 @@ export class LoansController {
 
 
 
-            let debit_borrower = await knex.debitAccount(lender, repayment_amount)
-            let credit_lender = await knex.creditAccount(lender, repayment_amount)
+            let debit_borrower = await usersHelper.debitAccount(lender, repayment_amount)
+            let credit_lender = await usersHelper.creditAccount(lender, repayment_amount)
 
 
             if(debit_borrower && credit_lender){
@@ -247,8 +254,8 @@ export class LoansController {
 
                
     
-                await knex.updateLoanStatus(ID, 'COMPLETED'); 
-                await knex.saveTransaction([transactionA, transactionB]);
+                await loansHelper.updateLoanStatus(ID, 'COMPLETED'); 
+                await transactionsHelper.saveTransaction([transactionA, transactionB]);
    
                 res.status(200).json(ServerResponse.success(single_loan, `Loan repayment of N${repayment_amount} has been processed successfully`));
             } else {
@@ -278,7 +285,7 @@ export class LoansController {
 
 
            
-            let total_loans : any = await knex.getLoanCount(account_type, email)
+            let total_loans : any = await loansHelper.getLoanCount(account_type, email)
             let total_page : number = Math.ceil(total_loans[0]['count(*)'] / take);
     
             
@@ -290,7 +297,7 @@ export class LoansController {
                 return res.status(400).json(ServerResponse.clientError({}, `Current page cannot be greater than ${total_page}`));
             }
 
-            let loans = await knex.getLoans(take, skip, account_type, email);
+            let loans = await loansHelper.getLoans(take, skip, account_type, email);
 
             
             res.status(200).json(ServerResponse.success({

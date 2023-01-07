@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
 import { SECRET_KEY } from "../config/index.js";
 import { ServerResponse } from "../config/response.js";
-import { KnexORM } from "../config/knex.js";
-import { JWTInterface, TransactionInterface } from "../interfaces/knex.interface.js";
+import { UsersHelper } from "../helpers/users.js";
+import { TransactionsHelper } from "../helpers/transactions.js";
+import { JWTInterface } from "../interfaces/jwt.interface.js";
+import { TransactionInterface } from "../interfaces/knex.interface.js";
 
-const knex = new KnexORM();
+const usersHelper = new UsersHelper();
+const transactionsHelper = new TransactionsHelper();
 
 export class TransactionController {
     internalTransfer = async (req: Request, res: Response) => {
@@ -22,8 +25,8 @@ export class TransactionController {
 
         try {
        
-            let user_info : any = await knex.getUserInfo(email);
-            let recipient_info : any = await knex.getUserInfo(to);
+            let user_info : any = await usersHelper.getUserInfo(email);
+            let recipient_info : any = await usersHelper.getUserInfo(to);
 
 
 
@@ -56,12 +59,12 @@ export class TransactionController {
             }
 
 
-            let debit_sender = await knex.debitAccount(email, amount)
-            let credit_receiver = await knex.creditAccount(to, amount)
+            let debit_sender = await usersHelper.debitAccount(email, amount)
+            let credit_receiver = await usersHelper.creditAccount(to, amount)
 
 
             if(debit_sender && credit_receiver){
-                await knex.saveTransaction([transactionA, transactionB]).then((data) => {
+                await transactionsHelper.saveTransaction([transactionA, transactionB]).then((data) => {
                     res.status(200).json(ServerResponse.success({ from: transactionA, to : transactionB }, `N${amount} has been successfully transfered to ${recipient_info[0].name}`));
                 }).catch((e) => {
                     res.status(400).json(ServerResponse.clientError({}, 'Database connection error'));
@@ -86,7 +89,7 @@ export class TransactionController {
 
         try {
 
-            let user_info : any = await knex.getUserInfo(email);
+            let user_info : any = await usersHelper.getUserInfo(email);
 
 
             if(user_info[0].wallet < amount){
@@ -95,7 +98,7 @@ export class TransactionController {
 
 
 
-            let debitUser = await knex.debitAccount(email, amount)
+            let debitUser = await usersHelper.debitAccount(email, amount)
 
 
             if(debitUser){
@@ -112,7 +115,7 @@ export class TransactionController {
                 }
     
 
-                await knex.saveTransaction(transaction_data)
+                await transactionsHelper.saveTransaction(transaction_data)
 
                 res.status(200).json(ServerResponse.success(transaction_data, `N${amount} withdrawal be processed by our agent shortly`));
             } else {
@@ -130,7 +133,7 @@ export class TransactionController {
 
 
         try {
-            let creditUser = await knex.creditAccount(email, amount)
+            let creditUser = await usersHelper.creditAccount(email, amount)
 
 
             if(creditUser){
@@ -144,7 +147,7 @@ export class TransactionController {
                 }
     
 
-                await knex.saveTransaction(transaction_data)
+                await transactionsHelper.saveTransaction(transaction_data)
 
                 res.status(200).json(ServerResponse.success(transaction_data, `N${amount} deposit has been made to your account`));
             } else {
@@ -172,7 +175,7 @@ export class TransactionController {
 
 
 
-            let total_transactions : any = await knex.getUserTransactionsCount(email)
+            let total_transactions : any = await transactionsHelper.getUserTransactionsCount(email)
             let total_page : number = Math.ceil(total_transactions[0]['count(*)'] / take);
     
             
@@ -184,7 +187,7 @@ export class TransactionController {
                 return res.status(400).json(ServerResponse.clientError({}, `Current page cannot be greater than ${total_page}`));
             }
 
-            let transactions = await knex.getUserTransactions(take, skip, email);
+            let transactions = await transactionsHelper.getUserTransactions(take, skip, email);
 
             
             res.status(200).json(ServerResponse.success({

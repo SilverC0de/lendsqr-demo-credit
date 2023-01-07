@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { ServerResponse } from "../config/response.js";
-import { KnexORM } from "../config/knex.js";
-import { JWTInterface, UserInterface } from "../interfaces/knex.interface.js";
+import { UsersHelper } from "../helpers/users.js";
+import { JWTInterface } from "../interfaces/jwt.interface.js";
+import { UserInterface } from "../interfaces/knex.interface.js";
 
-const knex = new KnexORM();
+const usersHelper = new UsersHelper();
 
 export class UserController {
     userInfo = async (req: Request, res: Response) => {
@@ -11,7 +12,7 @@ export class UserController {
 
         try {
        
-            let user_info : any = await knex.getUserInfo(email);
+            let user_info : any = await usersHelper.getUserInfo(email);
            
             let filtered_user_info : UserInterface = {
                 email: user_info[0].email,

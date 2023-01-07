@@ -27,11 +27,6 @@ export interface TransactionInterface {
     bank_name?: string;
 }
 
-export interface JWTInterface {
-    email?: string; 
-    account_type?: string;
-}
-
 export interface LoanInfo {
     borrower: string;
     lender: string;
