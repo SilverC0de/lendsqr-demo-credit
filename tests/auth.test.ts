@@ -1,12 +1,19 @@
- 
+import { describe, expect, test } from '@jest/globals';
+import { hashPassword, checkPassword } from '../src/helpers/auth';
 
-// describe("test add function", () => {
-//     it("should return 15 for add(10,5)", () => {
-//       expect(add(10, 5)).toBe(15);
-//     });
-  
-//     it("should return 5 for add(2,3)", () => {
-//       expect(add(2, 3)).toBe(5);
-//     });
-//   });
-  
+
+describe('Check password encryption', () => {
+
+    test('Encrypt password \'silver\'', async () => {
+        const hash = await hashPassword('silver');
+ 
+        expect(hash).toMatch(/^\$2a\$12/)
+    })
+    
+    test('Decrypt password \'silver\'', async () => {
+        const check = await checkPassword('silver', '$2a$12$lA37v7/ovmijk3CVPsPTHOXQAqnrcjiWCdCJSMSVbaoEIhkUf7YVC');
+
+        expect(check).toBe(true)
+    })
+
+})

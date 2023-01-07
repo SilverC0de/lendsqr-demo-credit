@@ -33,6 +33,7 @@ This repository was written in typescript and runs on Nodejs, installation is op
 3. ``cd lendsqr-demo-credit``
 4. ``npm i``
 5. ``npm build``
+6. ``npm run test``
 6. ``npm run it``
 
 

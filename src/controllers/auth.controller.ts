@@ -3,10 +3,11 @@ import { SECRET_KEY } from "../config/index.js";
 import { ServerResponse } from "../config/response.js";
 import { UsersHelper } from "../helpers/users.js";
 import { UserInterface } from "../interfaces/knex.interface.js";
-import bcryptjs from 'bcryptjs';
+import { hashPassword, checkPassword } from "../helpers/auth.js";
 import jwt from 'jsonwebtoken';
 
 const usersHelper = new UsersHelper();
+
 
 export class AuthController {
     registerUser = async (req: Request, res: Response) => {
@@ -30,7 +31,7 @@ export class AuthController {
             }
 
 
-            let encrypted_password =  await bcryptjs.hash(password, 12);
+            let encrypted_password = await hashPassword(password)
  
 
             let token = jwt.sign(
@@ -87,7 +88,7 @@ export class AuthController {
                 return res.status(500).json(ServerResponse.clientError({}, 'Your email does not exist on our platform'));
             }
 
-            const isMatch = await bcryptjs.compare(password, user_info[0].password);
+            const isMatch = await checkPassword(password, user_info[0].password)
 
 
             if(!isMatch){
