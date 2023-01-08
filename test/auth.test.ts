@@ -1,7 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import { hashPassword, checkPassword } from '../src/helpers/auth';
 
-
 describe('Check password encryption', () => {
 
     test('Encrypt password \'silver\'', async () => {
